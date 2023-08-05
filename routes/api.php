@@ -33,16 +33,7 @@ Route::post('/vacancies/{id}/delete', [\App\Http\Controllers\Api\VacancyControll
 Route::get('/vacancy/count', [\App\Http\Controllers\Api\VacancyController::class, 'count']);
 Route::get('/my-items/', [\App\Http\Controllers\Api\VacancyController::class, 'myItems']);
 
-//Adverts
-Route::get('/adverts', [\App\Http\Controllers\Api\AdvertController::class, 'index']);
-Route::get('/adverts/all', [\App\Http\Controllers\Api\AdvertController::class, 'all']);
-Route::get('/my-adverts', [\App\Http\Controllers\Api\AdvertController::class, 'adverts']);
-Route::get('/advert/{id}', [\App\Http\Controllers\Api\AdvertController::class, 'show']);
-Route::get('/advert/{id}/premium', [\App\Http\Controllers\Api\AdvertController::class, 'premium']);
-Route::get('/advert/{id}/vip', [\App\Http\Controllers\Api\AdvertController::class, 'vip']);
-Route::post('/advert/{id}/update', [\App\Http\Controllers\Api\AdvertController::class, 'update']);
-Route::post('/advert/{id}/delete', [\App\Http\Controllers\Api\AdvertController::class, 'delete']);
-Route::get('/advert/count', [\App\Http\Controllers\Api\AdvertController::class, 'count']);
+
 
 //Wishlist
 Route::get('wishlist/{id}/add', [\App\Http\Controllers\Api\WishlistController::class, 'add']);
@@ -63,6 +54,20 @@ Route::resource('categories', Category::class)->only(['index', 'show']);
 Route::resource('modes', Mode::class)->only(['index', 'show']);
 Route::resource('vacancies', Vacancy::class)->only(['index', 'show']);
 Route::resource('city', City::class)->only(['index', 'show']);
+
+//Adverts
+Route::get('/adverts', [\App\Http\Controllers\Api\AdvertController::class, 'index']);
+Route::post('/adverts/store', [\App\Http\Controllers\Api\AdvertController::class, 'store']);
+Route::get('/adverts/all', [\App\Http\Controllers\Api\AdvertController::class, 'all']);
+Route::get('/adverts/vip', [\App\Http\Controllers\Api\AdvertController::class, 'vip']);
+Route::get('/adverts/vip/{id}', [\App\Http\Controllers\Api\AdvertController::class, 'toVip']);
+
+Route::get('/my-adverts', [\App\Http\Controllers\Api\AdvertController::class, 'adverts']);
+Route::get('/advert/{id}/premium', [\App\Http\Controllers\Api\AdvertController::class, 'premium']);
+//Route::get('/advert/{id}/vip', [\App\Http\Controllers\Api\AdvertController::class, 'vip']);
+Route::post('/advert/{id}/update', [\App\Http\Controllers\Api\AdvertController::class, 'update']);
+Route::post('/advert/{id}/delete', [\App\Http\Controllers\Api\AdvertController::class, 'delete']);
+Route::get('/advert/count', [\App\Http\Controllers\Api\AdvertController::class, 'count']);
 
 Route::group(['prefix' => '/vacancies'], function () {
     Route::post('/store', [Vacancy::class, 'store']);

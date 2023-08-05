@@ -18,7 +18,7 @@ return new class extends Migration
             $table->timestamps();
         });
     }
-    public function down()
+    public function down(): void
     {
         Schema::dropIfExists('about_translations');
     }

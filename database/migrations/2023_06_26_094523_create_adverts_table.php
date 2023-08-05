@@ -25,8 +25,11 @@ return new class extends Migration {
             $table->timestamp('approved_time')->nullable();
             $table->dateTime('end_time')->default(Carbon::now()->addMonth());
             $table->timestamps();
-            $table->foreign('user_id')->references('id')
-                ->on('users')->onDelete('cascade');
+            $table->softDeletes();
+            $table->foreign('user_id')
+                ->references('id')
+                ->on('users')
+                ->onDelete('cascade');
         });
     }
 

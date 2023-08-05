@@ -2,37 +2,40 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Enums\CauserEnum;
+use App\Models\User;
+use App\Repositories\Advert\AdvertRepository;
+use App\Traits\ResponseTrait;
 use App\Http\Controllers\Controller;
 use App\Http\Enums\AdvertEnum;
-use App\Http\Enums\CompanyEnum;
-use App\Http\Enums\PremiumEnum;
 use App\Models\Advert;
 use App\Models\AdvertDescription;
-use App\Models\Company;
 use App\Models\PremiumAdvert;
-use App\Models\PremiumCompany;
-use App\Models\PremiumCompanyHistory;
-use App\Models\User;
-use App\Models\Vacancy;
 use App\Models\VipAdvert;
 use Exception;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Validator;
 
 class AdvertController extends Controller
 {
+    use ResponseTrait;
+
+    protected AdvertRepository $advertRepository;
+
     /**
      * @throws AuthenticationException
      */
-    public function __construct()
+    public function __construct(AdvertRepository $advertRepository)
     {
-        $this->middleware('apiMid', ['except' => ['index', 'show', 'all']]);
+        $this->advertRepository = $advertRepository;
+//        $this->middleware('apiMid', ['except' => ['index', 'show', 'all','vip','toVip']]);
     }
 
     public function index()
     {
-        return response()->json(['adverts' => Advert::where('end_time', '>', Carbon::now())->with('description')->get()], 200);
+        return $this->responseData($this->advertRepository->getAdverts());
     }
 
     public function all()
@@ -73,36 +76,42 @@ class AdvertController extends Controller
 
     public function show($id)
     {
-        if (Advert::where('id', $id)->where('end_time', '>', Carbon::now()) and Advert::where('id', $id)->exists()) {
-            $advert = Advert::find($id);
-            $advert->increment('view_count');
-            return response()->json([
-                'advert' => $advert,
-            ], 200);
-        } else {
-            return response()->json([
-                'advert' => 'advert-not-found',
-            ], 404);
-        }
+//        if (Advert::where('id', $id)->where('end_time', '>', Carbon::now()) and Advert::where('id', $id)->exists()) {
+//            $advert = Advert::find($id);
+//            $advert->increment('view_count');
+//            return response()->json([
+//                'advert' => $advert,
+//            ], 200);
+//        } else {
+//            return response()->json([
+//                'advert' => 'advert-not-found',
+//            ], 404);
+//        }
     }
 
     public function store(Request $request)
     {
-        try {
-            $advert = new Advert();
-            $advert->save();
-            $aDes = new AdvertDescription();
-            $aDes->title = $request->title;
-            $aDes->short_description = $request->short_description;
-
-            $advert->description()->save($aDes);
-            return response()->json(['advert' => $advert]);
-        } catch (Exception $e) {
-            return response()->json(['error' => $e->getMessage()]);
+        $validator = Validator::make($request->all(), [
+            'title' => 'required',
+            'description' => 'required',
+            'short_description' => 'required',
+            'salary' => 'required',
+            'phone' => 'required',
+            'owner' => 'required',
+        ]);
+        if ($validator->fails()) {
+            return $this->responseValidation($validator->errors());
         }
+        $owner = ['user' => User::find($request->user_id), 'owner_type' => CauserEnum::USER];
+        return $this->responseData($this->advertRepository->createAdvert($request, $owner));
     }
 
     public function premium($id)
+    {
+        return $this->advertRepository->getPremiumAdverts();
+    }
+
+    public function toPremium($id)
     {
         try {
             $advert = Advert::find($id);
@@ -117,19 +126,14 @@ class AdvertController extends Controller
         }
     }
 
-    public function vip($id)
+    public function vip()
     {
-        try {
-            $advert = Advert::find($id);
-            $vip = new VipAdvert();
-            $vip->vip = AdvertEnum::VIP;
-            $vip->start_time = \Carbon\Carbon::now();
-            $vip->end_time = Carbon::now()->addMonths(1);
-            $advert->premium()->save($vip);
-            return response()->json(['advert' => $advert], 200);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], 500);
-        }
+        return $this->responseData($this->advertRepository->getVipAdverts());
+    }
+
+    public function toVip($id)
+    {
+        return $this->responseData($this->advertRepository->makeVipAdvert($id));
     }
 
     public function delete($id)

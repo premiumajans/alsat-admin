@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Models\Admin;
 use App\Models\User;
 use Exception;
-//use Illuminate\Auth\AuthenticationException;
+//use Illuminate\Authentication\AuthenticationException;
 use Illuminate\Support\Facades\{
     Auth,
     Hash,
@@ -116,6 +116,8 @@ class UserService
             'statusCode' => 200,
         ];
     }
+
+
 
     public function resetPassword(array $data): \Illuminate\Http\JsonResponse
     {

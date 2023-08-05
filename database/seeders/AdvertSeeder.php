@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Advert;
 use App\Models\AdvertDescription;
+use App\Models\AdvertPhoto;
 use Illuminate\Database\Seeder;
 
 class AdvertSeeder extends Seeder
@@ -21,5 +22,9 @@ class AdvertSeeder extends Seeder
         $description->owner = 'sad';
         $description->phone = 444454;
         $advert->description()->save($description);
+        $advertPhoto = new AdvertPhoto();
+        $advertPhoto->photo = 'photo/example.jpg';
+        $advertPhoto->main_photo = 1;
+        $advert->photos()->save($advertPhoto);
     }
 }

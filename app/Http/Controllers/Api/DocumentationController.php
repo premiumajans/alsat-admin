@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
  *
  * @OA\POST  (
  *     path="/api/login",
- *     tags={"Auth"},
+ *     tags={"Authentication"},
  *     @OA\RequestBody(
  *         @OA\MediaType(
  *             mediaType="application/json",
@@ -56,7 +56,7 @@ use Illuminate\Http\Request;
  * Logout
  * @OA\POST  (
  *     path="/api/logout",
- *     tags={"Auth"},
+ *     tags={"Authentication"},
  *      @OA\RequestBody(
  *         @OA\MediaType(
  *             mediaType="application/json",
@@ -88,7 +88,7 @@ use Illuminate\Http\Request;
  * Refresh
  * @OA\POST  (
  *     path="/api/refresh",
- *     tags={"Auth"},
+ *     tags={"Authentication"},
  *      @OA\RequestBody(
  *         @OA\MediaType(
  *             mediaType="application/json",
