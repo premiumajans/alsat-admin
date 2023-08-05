@@ -4,11 +4,12 @@ namespace App\Models;
 
 use App\Http\Enums\AdvertStatusEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Advert extends Model
 {
+    use SoftDeletes;
     protected $guarded = [];
-
     public function category(): void
     {
         $this->belongsToMany(AltCategory::class);
@@ -33,6 +34,7 @@ class Advert extends Model
     {
         return $this->hasMany(PremiumAdvert::class);
     }
+
     public function vip(): \Illuminate\Database\Eloquent\Relations\HasMany
     {
         return $this->hasMany(VipAdvert::class);

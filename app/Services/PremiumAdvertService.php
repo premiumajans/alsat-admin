@@ -3,8 +3,8 @@
 namespace App\Services;
 
 use App\Http\Enums\AdvertEnum;
-use App\Models\Advert;
 use App\Models\PremiumAdvert;
+use App\Models\Advert;
 use Carbon\Carbon;
 use Exception;
 

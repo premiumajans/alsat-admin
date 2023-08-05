@@ -11,7 +11,7 @@ use App\Models\PremiumCompany;
 use App\Models\PremiumCompanyHistory;
 use App\Services\PremiumCompanyService;
 use Carbon\Carbon;
-//use Illuminate\Auth\AuthenticationException;
+//use Illuminate\Authentication\AuthenticationException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;

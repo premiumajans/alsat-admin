@@ -2,17 +2,20 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\{Http\Controllers\Controller, Models\Term, Services\UserService};
+use App\{Http\Controllers\Controller, Models\Term, Repositories\Authentication\AuthRepository, Services\UserService};
 use Illuminate\{Auth\AuthenticationException, Http\Request, Support\Facades\Validator};
 use Tymon\JWTAuth\Facades\JWTAuth;
+use App\Traits\ResponseTrait;
 
 class UserController extends Controller
 {
-    private UserService $userService;
+    use ResponseTrait;
 
-    public function __construct(UserService $userService)
+    private AuthRepository $authRepository;
+
+    public function __construct(AuthRepository $authRepository)
     {
-        $this->userService = $userService;
+        $this->authRepository = $authRepository;
         $this->middleware('apiMid', ['except' => ['login', 'register', 'forgotPassword', 'term', 'resetPassword', 'checkUser']]);
     }
 
@@ -26,11 +29,9 @@ class UserController extends Controller
             'password' => 'required|string',
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors(),
-            ], 422);
+            return $this->responseValidation($validator->errors());
         }
-        return $this->userService->login($request->only('email', 'password'));
+        return $this->authRepository->login($request->only('email', 'password'));
     }
 
     public function register(Request $request)
@@ -43,11 +44,9 @@ class UserController extends Controller
             'term' => 'required',
         ]);
         if ($validator->fails()) {
-            return response()->json([
-                'errors' => $validator->errors(),
-            ], 422);
+            return $this->responseValidation($validator->errors());
         }
-        return $this->userService->register($request->all());
+        return $this->authRepository->register($request->all());
     }
 
     public function forgotPassword(Request $request)
@@ -66,20 +65,19 @@ class UserController extends Controller
         return $this->userService->refresh();
     }
 
-    #[NoReturn] public function changePassword(Request $request)
+    public function changePassword(Request $request)
     {
         return $this->userService->changePassword($request);
     }
 
     public function logout()
     {
-        $result = $this->userService->logout();
-        return response()->json($result, 200);
+        return $this->authRepository->logout();
     }
 
     public function term()
     {
-        return response()->json(['term' => Term::first()]);
+        return $this->responseData(Term::first());
     }
 
     public function redirectToGoogle()
